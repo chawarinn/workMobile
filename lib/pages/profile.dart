@@ -1,4 +1,4 @@
-// ignore_for_file: prefer_const_constructors
+// ignore_for_file: prefer_const_constructors, use_build_context_synchronously, unused_local_variable, must_be_immutable
 
 import 'dart:convert';
 import 'dart:developer';
@@ -61,7 +61,7 @@ String url ='';
 				  },
 				  child: const Text('ปิด')),
 			  FilledButton(
-				  onPressed: () {}, child: const Text('ยืนยัน'))
+				  onPressed: () => delete() , child: const Text('ยืนยัน'))
 			],
 		  ),
 		],
@@ -200,7 +200,7 @@ showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('ผิดพลาด'),
-          content: Text('บันทึกข้อมูลไม่สำเร็จ ' + err.toString()),
+          content: Text('บันทึกข้อมูลไม่สำเร็จ $err'),
           actions: [
             FilledButton(
                 onPressed: () {
@@ -212,34 +212,32 @@ showDialog(
       );
     }
   }
-
-  void delete() async{
+void delete() async{
     var value = await Configuration.getConfig();
     var url = value['apiEndpoint'];
-    try{
-      var data = await http.delete(Uri.parse('$url/customers/${widget.idx}'));
+    try {
+      var data = await http.delete(Uri.parse('$url/customers/${widget.idx}'),
+          headers: {"Content-Type": "application/json; charset=utf-8"},);
       showDialog(
-        context: context, 
-        builder: (context)=>AlertDialog(
-          title: Text('สำเร็จ'),
-          content: Text('ลบข้อมูลเรียบร้อย'),
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('สำเร็จ'),
+          content: const Text('ลบข้อมูลเรียบร้อย'),
           actions: [
             FilledButton(
-            onPressed: (){
-              Navigator.popUntil(
-                context, 
-              (route)=>route.isFirst,
-              );
-            }, 
-            child: Text('ปิด'))
+                onPressed: () {
+                  Navigator.popUntil(context, (route) => route.isFirst,);
+                },
+                child: const Text('ปิด'))
           ],
-        ));
-    }catch(err){
+        ),
+      );
+    } catch (err) {
       showDialog(
         context: context,
         builder: (context) => AlertDialog(
           title: const Text('ผิดพลาด'),
-          content: Text('บันทึกข้อมูลไม่สำเร็จ ' + err.toString()),
+          content: Text('ลบข้อมูลไม่สำเร็จ $err'),
           actions: [
             FilledButton(
                 onPressed: () {
